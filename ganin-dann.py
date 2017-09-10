@@ -6,10 +6,6 @@
 
 #Evan Racah 2017
 
-
-# In[2]:
-
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -19,10 +15,6 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 import numpy as np
-
-
-# In[3]:
-
 
 transform = transforms.Compose(
     [transforms.ToTensor(),
@@ -38,16 +30,8 @@ testset = torchvision.datasets.MNIST(root='./data', train=False,
 testloader = torch.utils.data.DataLoader(testset, batch_size=16,
                                          shuffle=False, num_workers=2)
 
-
-# In[4]:
-
-
 # thanks for the example, Justin:
 #https://github.com/jcjohnson/pytorch-examples/blob/master/autograd/two_layer_net_custom_function.py
-
-
-# In[5]:
-
 
 class GRL(torch.autograd.Function):
     """ 
@@ -83,9 +67,6 @@ class GRL(torch.autograd.Function):
         return - self.lambda_ * grad_input
 
 
-# In[6]:
-
-
 class mnistFeatExtractor(nn.Module):
     def __init__(self):
         super(mnistFeatExtractor, self).__init__()
@@ -101,10 +82,6 @@ class mnistFeatExtractor(nn.Module):
         
         
 
-
-# In[7]:
-
-
 class mnistDomainClassifier(nn.Module):
     def __init__(self, lambda_=0):
         super(mnistDomainClassifier, self).__init__()
@@ -118,10 +95,6 @@ class mnistDomainClassifier(nn.Module):
         x = F.sigmoid(self.fc2(x))
         return x
             
-
-
-# In[8]:
-
 
 class mnistClassifier(nn.Module):
     def __init__(self):
@@ -137,10 +110,6 @@ class mnistClassifier(nn.Module):
         x = F.softmax(self.fc3(x))
         return x
 
-
-# In[9]:
-
-
 class classifNet(nn.Module):
     def __init__(self, mfe, mcls):
         super(classifNet,self).__init__()
@@ -153,10 +122,6 @@ class classifNet(nn.Module):
         
     
 
-
-# In[10]:
-
-
 class domainClassifNet(nn.Module):
     def __init__(self, mfe, mdc):
         super(domainClassifNet,self).__init__()
@@ -167,43 +132,19 @@ class domainClassifNet(nn.Module):
         x = self.mdc(x)
         return x
 
-
-# In[11]:
-
-
 mfe = mnistFeatExtractor()
 mcls = mnistClassifier()
 mdc = mnistDomainClassifier()
 
-
-# In[12]:
-
-
 cls_net = classifNet(mfe, mcls)
 
-
-# In[13]:
-
-
 dc_net = domainClassifNet(mfe, mdc)
-
-
-# In[14]:
-
 
 params_list_dict = [{"params": mcls.parameters()},
                     {"params": mdc.parameters()},
                     {"params": mfe.parameters() }]
 
-
-# In[15]:
-
-
 criterion = nn.CrossEntropyLoss()
-
-
-# In[16]:
-
 
 def lr_annealing_rule(cur_epoch, last_epoch):
     mu_o = 0.01
@@ -217,9 +158,6 @@ total_num_epochs = 10
 lr_lambda = lambda cur_epoch: lr_annealing_rule(cur_epoch, total_num_epochs)
 
 
-# In[17]:
-
-
 def lambda_annealing_rule(cur_epoch, last_epoch):
     p = float(cur_epoch) / last_epoch #I think this is what they mean by p -> hacky
     gamma = 10.
@@ -227,19 +165,11 @@ def lambda_annealing_rule(cur_epoch, last_epoch):
     return lambdap
     
 
-
-# In[18]:
-
-
 #lr_0 = lr_lambda(0)
 
 optimizer = optim.SGD(params=params_list_dict, momentum=0.9, lr=0.1)
 
 #scheduler = lrs.LambdaLR(optimizer,lr_lambda=lr_lambda)
-
-
-# In[20]:
-
 
 for epoch in range(total_num_epochs):
     
@@ -278,10 +208,5 @@ for epoch in range(total_num_epochs):
 
 
 print('Finished Training')
-
-
-# In[ ]:
-
-
 
 
