@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[68]:
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -14,7 +9,6 @@ from torch.autograd import Variable
 import numpy as np
 import torch.utils.data.dataset
 import pandas as pd
-from skimage import io
 import os
 from PIL import Image
 
@@ -22,20 +16,16 @@ transform = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-trainset = torchvision.datasets.MNIST(root='./data', train=True,
+mnistTrainSet = torchvision.datasets.MNIST(root='./data', train=True,
                                         download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=16,
+mnistTrainLoader = torch.utils.data.DataLoader(mnistTrainSet, batch_size=16,
                                           shuffle=True, num_workers=2)
 
-testset = torchvision.datasets.MNIST(root='./data', train=False,
+mnistTestSet = torchvision.datasets.MNIST(root='./data', train=False,
                                        download=True, transform=transform)
-testloader = torch.utils.data.DataLoader(testset, batch_size=16,
+mnistTestLoader = torch.utils.data.DataLoader(mnistTestSet, batch_size=16,
                                          shuffle=False, num_workers=2)
 
-
-transformMnistm = transforms.Compose(
-            [transforms.ToTensor(),
-             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 
 mnistmTrainSet = mnistmTrainingDataset(text_file ='Downloads/mnist_m/mnist_m_train_labels.txt',
@@ -52,7 +42,7 @@ mnistmTestLoader = torch.utils.data.DataLoader(mnistmTestSet,batch_size=16,shuff
 
 class mnistmTestingDataset(torch.utils.data.Dataset):
     
-    def __init__(self,text_file,root_dir,transform=transformMnistm):
+    def __init__(self,text_file,root_dir,transform=transform):
         """
         Args:
             text_file(string): path to text file
@@ -81,7 +71,7 @@ class mnistmTestingDataset(torch.utils.data.Dataset):
     
 class mnistmTrainingDataset(torch.utils.data.Dataset):
     
-    def __init__(self,text_file,root_dir,transform=transformMnistm):
+    def __init__(self,text_file,root_dir,transform=transform):
         """
         Args:
             text_file(string): path to text file
@@ -107,18 +97,32 @@ class mnistmTrainingDataset(torch.utils.data.Dataset):
         
         
         
-#test trainloader ouput + batchsize        
+#test trainloader ouput + batchsize (mnist-m)     
 for i_batch,sample_batched in enumerate(mnistmTrainLoader,0):
+    print("training sample for mnist-m")
     print(i_batch,sample_batched['image'],sample_batched['labels'])
     if i_batch == 0:
         break
         
-#test testloader output + batchsize     
+#test testloader output + batchsize (mnist-m)   
 for i_batch,sample_batched in enumerate(mnistmTestLoader,0):
+    print("testing sample for mnist-m")
     print(i_batch,sample_batched['image'],sample_batched['labels'])
     if i_batch == 0:
-        break     
+       break     
         
+#test trainloader output+batchsize (mnist)   
+for i_batch,sample_batched in enumerate(mnistTrainLoader,0):
+    print("training sample for mnist")
+    print(i_batch,sample_batched[0],sample_batched[1])
+    if i_batch == 0:
+        break
+#test testloader output+batchsize (mnist)
+for i_batch,sample_batched in enumerate(mnistTestLoader,0):
+    print("testing sample for mnist")
+    print(i_batch,sample_batched[0],sample_batched[1])
+    if i_batch == 0:
+        break
         
         
         
@@ -199,13 +203,5 @@ class GRL(torch.autograd.Function):
 #                   {"params":featureExtractNet.parameters()}]
 
 #criterion = nn.CrossEntropyLoss()
-
-
-
-
-
-
-# In[ ]:
-
 
 
